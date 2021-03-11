@@ -1,0 +1,482 @@
+/*  ==========
+    USED FONTS
+    ==========  */
+
+@font-face {
+  font-family: 'Lato';
+  src: local('Lato'),
+       url('./font/lato/LatoLatin-Regular.eot') format('embedded-opentype'),
+       url('./font/lato/LatoLatin-Regular.woff2') format('woff2'),
+       url('./font/lato/LatoLatin-Regular.woff') format('woff'),
+       url('./font/lato/LatoLatin-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: local('Lato Italic'),
+       url('./font/lato/LatoLatin-Italic.eot') format('embedded-opentype'),
+       url('./font/lato/LatoLatin-Italic.woff2') format('woff2'),
+       url('./font/lato/LatoLatin-Italic.woff') format('woff'),
+       url('./font/lato/LatoLatin-Italic.ttf') format('truetype');
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Lato';
+  src: local('Lato Bold'),
+       url('./font/lato/LatoLatin-Bold.eot') format('embedded-opentype'),
+       url('./font/lato/LatoLatin-Bold.woff2') format('woff2'),
+       url('./font/lato/LatoLatin-Bold.woff') format('woff'),
+       url('./font/lato/LatoLatin-Bold.ttf') format('truetype');
+  font-weight: bold;
+}
+
+/*  =======
+    COMMONS
+    =======  */
+
+* {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-decoration: none;
+    outline: none;
+}
+
+body {
+    font-family: 'Lato', sans-serif;
+    overflow-x: auto;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: white;
+    background-color: #2e2e2e;
+}
+
+.hide {
+    display: none;
+}
+
+/*  ========
+    SECTIONS
+    ========    */
+
+main {
+    margin: 1rem;
+}
+
+/*  ============
+    TEXT DISPLAY
+    ============  */
+
+.action_header, .settings-header {
+    width: 100%;
+    text-align: center;
+    font-size: 2rem;
+}
+
+.action_text {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+.settings-header {
+    margin-top: 2rem;
+}
+
+.line {
+    display: grid;
+    grid-template-columns: 0.1fr 1fr;
+    margin-top: 1rem;
+}
+
+/*  ======
+    INPUTS
+    ======   */
+
+/* Text */
+
+.input-div {
+    position: relative;
+    display: grid;
+    grid-template-columns: 7% 93%;
+    height: 3em;
+    margin: 1rem 0;
+    padding: 5px 0;
+    border-bottom: 2px solid #d9d9d9;
+}
+
+.search .input-div {
+    margin: 2rem;
+}
+
+.input-div:after, .input-div:before {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    width: 0%;
+    height: 2px;
+    background-color: blue;
+    transition: .4s;
+}
+
+.input-div:after {
+    right: 50%;
+}
+
+.input-div:before {
+    left: 50%;
+}
+
+.input-div.focus:after, .input-div.focus:before {
+    width: 50%
+}
+
+.login-content .input-div.one {
+	margin-top: 0;
+}
+
+.input-div.pass {
+	margin-bottom: 4px;
+}
+
+.input-div.focus .i i {
+    color: blue;
+}
+
+.input-div.focus > div > h5 {
+    top: -5px;
+    font-size: 0.75em;
+    color: lightblue;
+}
+
+h5.active {
+    top: -5px;
+    font-size: 0.75em;
+    background: none;
+    color: lightblue;
+}
+
+.i {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.i i {
+    color: #d9d9d9;
+    transition: .3s;
+}
+
+.input-div > div {
+    position: relative;
+    min-height: 3em;
+}
+
+h5 {
+    position: absolute;
+    left: 1em;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6669b2;
+    font-size: 1em;
+    transition: .3s;
+}
+
+.input-div > div > .input,
+.input-div > div > .input_styled {
+    position: absolute;
+    font-family: 'Lato', sans-serif;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border: none;
+    outline: none;
+    background: none;
+    padding: 0.5em 0.7em;
+    font-size: 1.2em;
+    color: white;
+}
+
+input {
+  padding: 3px;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.confirm-field {
+    display: block ruby;
+    text-align: right;
+}
+
+/* Choose */
+
+.select-box {
+    display:flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.select-box .option-container {
+    z-index: 5;
+    background: lightgray;
+    color: #f5f6fa;
+    max-height: 0;
+    width: 100%;
+    opacity: 0;
+    transition: all 0.5s;
+    border-radius: 0 0 8px 8px;
+    overflow: hidden;
+    order: 1;
+}
+
+.selected {
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    border: none;
+    outline: none;
+    background: none;
+    padding: 0.5em 0.7em;
+    font-size: 1.2em;
+    color: lightgray;
+    text-align: left;
+
+    position: relative;
+
+    order: 0;
+}
+
+.fas {
+    transition: all 0.5s;
+}
+
+.select-box .option-container::-webkit-scrollbar {
+    width: 8px;
+    background: #555;
+    border-radius: 0 0 8px 0;
+}
+
+.select-box .option-container::-webkit-scrollbar-thumb {
+    width: 8px;
+    background: #262626;
+    border-radius: 0 0 8px 0;
+}
+
+.select-box .option-container.active {
+    max-height: 11em;
+    opacity: 1;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+}
+
+.select-box .option, .selected {
+    padding: 12px 24px;
+    cursor: pointer;
+}
+
+.arrow {
+    cursor: pointer;
+}
+
+.select-box .option:hover {
+    background: darkgray;
+}
+
+.select-box .option .radio {
+    display: none;
+}
+
+.select-box label {
+    cursor: pointer;
+}
+
+.select-box .option-container.active ~ .search-box input {
+    z-index: 5;
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.select-box .option-container.active ~ .search-box {
+    height: 3rem;
+}
+
+.search-box {
+    height: 0;
+    transition: all 0.5s;
+}
+
+.search-box input {
+    z-index: -1;
+    width: 100%;
+    padding: 12px 16px;
+    position: relative;
+    border-radius: 8px 8px 0 0;
+    border: 8px solid lightgray;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.5s;
+}
+
+.search-box input:focus {
+    outline: none;
+}
+
+.selector-line {
+    position: relative;
+    display: grid;
+    grid-template-columns: 7% 90% 3%;
+    margin: 25px 0;
+    padding: 5px 0;
+    border-bottom: 2px solid #d9d9d9;
+}
+
+.line4 {
+    position: relative;
+    display: grid;
+    grid-template-columns: 7% 40% 3% 50%;
+    margin: 25px 0;
+    padding: 5px 0;
+    border-bottom: 2px solid #d9d9d9;
+}
+
+.no-margin {
+    margin: 0;
+    width: 100%;
+}
+
+/*  =======
+    BUTTONS
+    ======= */
+
+.btnconfirm {
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: 1fr 2.5rem;
+    width: 10rem;
+    border: 1px solid #4c4c4c;
+    border-radius: 5px;
+    align-items: center;
+    margin-left: auto;
+    margin-top: 1rem;
+    box-shadow: 10px 10px 20px rgba(255, 255, 255, 0.2);
+}
+
+.btnconfirm i {
+    padding: 1rem;
+}
+
+.btnconfirm span {
+    position: relative;
+    display: inline-block;
+}
+
+.btnconfirm span::after {
+    content: "";
+    border-bottom: 2px solid #4c4c4c;
+    width: 0;
+    max-width: 100%;
+    display: block;
+    height: 2px;
+    transition: width .5s cubic-bezier(.191,1,.22,1);
+    position: absolute;
+}
+
+.btnconfirm:focus span::after,
+.btnconfirm:hover span::after {
+    width: 100%;
+}
+
+
+/*  ===================
+    INFORMATION SECTION
+    =================== */
+
+.role_picture {
+    z-index: 10;
+    background: gray;
+    border-radius: 0 5px 5px 0;
+    position: fixed;
+    left: 0;
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
+    box-shadow: 0 15px 20px rgba(255, 255, 255, 0.2);
+    transition: all .5s ease;
+}
+
+.role_picture.show {
+    left: -18rem;
+}
+
+.role_picture img {
+    border-radius: 5px;
+}
+
+.informations {
+    z-index: 12;
+    background: gray;
+    position: fixed;
+    overflow: auto;
+
+    left: -18rem;
+    width: 18rem;
+    top: 0;
+    height: 100%;
+    transition: all .5s ease;
+    border-radius: 0 5px 5px 0;
+    box-shadow: 0 15px 20px rgba(255, 255, 255, 0.2);
+
+    display: grid;
+    grid-template-rows: 1fr auto;
+}
+
+.informations.show {
+    left: 0;
+}
+
+.side-content {
+    margin-left: 0.25rem;
+    display: flex;
+    flex-flow: column;
+    padding-top: 1rem;
+    color: red;
+    font-size: 1.25rem;
+}
+
+.side-footer {
+    margin-bottom: 0.25rem;
+}
+
+.side-footer a {
+    margin-left: 0.25rem;
+}
+
+/*  ==============
+    FLASH MESSAGES
+    ==============  */
+
+.flash-container {
+    position: absolute;
+    z-index: 2;
+    right: 1rem;
+    bottom: 1rem;
+}
+
+.flash {
+    display: block;
+    background: lightgreen;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    border: 2px solid darkgray;
+    font-family: 'Lato', sans-serif;
+    margin: 1rem 0;
+    transition: .5s ease-out;
+}
+
+.flash-error {
+    background: red;
+}

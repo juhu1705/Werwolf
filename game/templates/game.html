@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="header">
+    <div class="role_picture">
+        <img src="{{ url_for('static', filename='pictures/wolf.png') }}">
+    </div>
+    <div class="informations">
+        <div class="side-content">
+            <div class="username">Name: </div>
+            <div class="room_name">Raum: </div>
+            <div class="role_name">Rolle: </div>
+            <div class="explanation">Erklärung: </div>
+        </div>
+        <div class="side-footer">
+            <a href="{{ url_for('game.imprint') }}">Impressum</a>
+            <a href="{{ url_for('game.privacy') }}">Datenschutz</a>
+            <a href="{{ url_for('game.license') }}">Lizenzen</a>
+        </div>
+    </div>
+</div>
+<div class="main">
+    <div class="action_header"></div>
+    <div class="action_text"></div>
+    <div class="login_action">
+        <div class="input-div pass">
+            <div class="i">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="div">
+                <h5>Benutzername</h5>
+                <input class="input" type="text" name="username" id="username">
+            </div>
+        </div>
+        <div class="confirm-field">
+            <button class="btnconfirm" id="login" type="submit">
+                <div><span>Login</span></div><i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <div class="rooms">
+        <div class="input-div pass">
+            <div class="i">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="div">
+                <h5>Room</h5>
+                <input class="input" type="text" name="roomname" id="roomname">
+            </div>
+        </div>
+        <div class="confirm-field">
+            <button class="btnconfirm" id="create" type="submit">
+                <div><span>Create</span></div><i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+        <div class="confirm-field">
+            <button class="btnconfirm" id="join" type="submit">
+                <div><span>Join</span></div><i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <div class="game-settings">
+        <div class="settings-header">
+
+        </div>
+        <div class="settings-listed">
+
+        </div>
+        <div class="admin-only-override">
+            <div class="confirm-field">
+                <button class="btnconfirm" id="save" type="submit">
+                    <div><span>Speichern</span></div><i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <div class="confirm-field">
+                <button class="btnconfirm" id="start" type="submit">
+                    <div><span>Starten</span></div><i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="action">
+        <div class="input-div selector-line choose">
+            <div class="i">
+                <i class="fas fa-chart-area"></i>
+            </div>
+            <div class="div">
+                <h5>Spieler</h5>
+
+                <div class="select-box selected_player">
+                    <div class="option-container selected_player">
+
+                    </div>
+
+
+                    <input class="input selected visible" name="selected_player" id="selected_player" value="" readonly="readonly">
+
+                    <div class="search-box">
+                        <input type="text" placeholder="Suche..." />
+                    </div>
+                </div>
+
+            </div>
+            <div class="i arrow">
+                <i class="fas fa-angle-down"></i>
+            </div>
+        </div>
+        <div class="confirm-field">
+            <button class="btnconfirm" id="continue" type="submit">
+                <div><span>Weiter</span></div><i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

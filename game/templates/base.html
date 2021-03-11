@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <title>Werwolf</title>
+    <link rel="icon" href="/static/pictures/profile.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/pictures/profile.ico" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://kit.fontawesome.com/a37df8e790.js" crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.2/socket.io.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="page">
+    <main>
+        <div>
+            <noscript>
+                <p class="warn">
+                    JavaScript ist in Ihrem Browser deaktiviert bzw. nicht unterstützt.
+                    Diese Seite benötigt JavaScript, um richtig zu funktionieren.
+                </p>
+            </noscript>
+        </div>
+        {% block content %}
+        {% endblock %}
+    </main>
+</div>
+<div class="flash-container">
+
+</div>
+</body>
+</html>
