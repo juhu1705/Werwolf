@@ -1,0 +1,3 @@
+graft game/static
+graft game/templates
+global-exclude *.pyc

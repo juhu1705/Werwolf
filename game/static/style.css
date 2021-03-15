@@ -52,6 +52,8 @@ body {
     background-attachment: fixed;
     color: white;
     background-color: #2e2e2e;
+    min-height: 100vh;
+    margin-top: -1rem;
 }
 
 .hide {
@@ -74,6 +76,7 @@ main {
     width: 100%;
     text-align: center;
     font-size: 2rem;
+    padding-top: 1rem;
 }
 
 .action_text {
@@ -81,8 +84,14 @@ main {
     text-align: center;
 }
 
+.votes {
+    margin-top: 2rem;
+    text-align: center;
+}
+
 .settings-header {
     margin-top: 2rem;
+    padding-top: 0;
 }
 
 .line {
@@ -117,7 +126,7 @@ main {
     bottom: -2px;
     width: 0%;
     height: 2px;
-    background-color: blue;
+    background-color: black;
     transition: .4s;
 }
 
@@ -142,7 +151,7 @@ main {
 }
 
 .input-div.focus .i i {
-    color: blue;
+    color: black;
 }
 
 .input-div.focus > div > h5 {
@@ -405,6 +414,7 @@ input {
     padding: 0.5rem 1rem 0.5rem 0.5rem;
     box-shadow: 0 15px 20px rgba(255, 255, 255, 0.2);
     transition: all .5s ease;
+    top: 1rem;
 }
 
 .role_picture.show {
@@ -442,7 +452,7 @@ input {
     display: flex;
     flex-flow: column;
     padding-top: 1rem;
-    color: red;
+    color: white;
     font-size: 1.25rem;
 }
 
@@ -479,4 +489,45 @@ input {
 
 .flash-error {
     background: red;
+}
+
+/*  =======================
+    PRIVACY IMPRINT LICENCE
+    ======================= */
+
+#post-section {
+    padding: 2rem;
+    padding-top: 6rem;
+}
+
+.topic {
+    padding-top: 2rem;
+    font-size: 2rem;
+}
+
+.license {
+    padding-top: 1rem;
+}
+
+.license-topic {
+    font-size: 1.5rem;
+    padding-bottom: 1rem;
+}
+
+.contact {
+    padding: 2rem;
+    padding-left: 4rem;
+}
+
+.license p {
+    padding-top: 0.5rem;
+}
+
+a {
+    color: white;
+    border-bottom: 1px dotted white;
+}
+
+a:hover {
+    border-bottom: 1px solid white;
 }

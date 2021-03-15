@@ -15,14 +15,14 @@ def start():
 
 @bp.route('/imprint')
 def imprint():
-    return render_template('game.html')
+    return render_template('imprint.html')
 
 
 @bp.route('/privacy')
 def privacy():
-    return render_template('game.html')
+    return render_template('privacy.html')
 
 
 @bp.route('/license')
 def license():
-    return render_template('game.html')
+    return render_template('license.html')

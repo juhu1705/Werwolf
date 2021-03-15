@@ -131,11 +131,22 @@ $(document).ready(() => {
         $('.rooms').addClass('hide');
         $('.action').addClass('hide');
         $('.login_action').removeClass('hide');
-        $('.game-settings').addClass('hide')
+        $('.game-settings').addClass('hide');
+        $('.continue').addClass('hide');
+        $('.votes').html('');
     });
 
     socket.on('warn', (data) => {
         $('.flash-container').append('<div class="flash flash-error" tabindex="0">' + data + '</div>');
+        $('.flash').filter(":contains('" + data + "')").on('click', () => {
+            $('.flash').filter(":contains('" + data + "')").fadeOut(1000, () => {
+                $('.flash').filter(":contains('" + data + "')").remove();
+            });
+        });
+    });
+
+    socket.on('info', (data) => {
+        $('.flash-container').append('<div class="flash" tabindex="0">' + data + '</div>');
         $('.flash').filter(":contains('" + data + "')").on('click', () => {
             $('.flash').filter(":contains('" + data + "')").fadeOut(1000, () => {
                 $('.flash').filter(":contains('" + data + "')").remove();
@@ -167,22 +178,47 @@ $(document).ready(() => {
         $('.rooms').removeClass('hide');
         $('.login_action').addClass('hide');
         $('.action').addClass('hide');
-        $('.game-settings').addClass('hide')
+        $('.game-settings').addClass('hide');
+        $('.continue').addClass('hide');
     });
 
     socket.on('show_room', (data) => {
         $('.rooms').addClass('hide');
         $('.login_action').addClass('hide');
         $('.action').addClass('hide');
+        $('.continue').addClass('hide');
+    });
+
+    socket.on('correct_vote', (data) => {
+        $('.rooms').addClass('hide');
+        $('.login_action').addClass('hide');
+        $('.continue').addClass('hide');
+
+        $('.action').removeClass('hide');
+    });
+
+    socket.on('hide_vote', (data) => {
+        $('.action').addClass('hide');
     });
 
     socket.on('put_choices', (data) => {
+        $('.rooms').addClass('hide');
+        $('.login_action').addClass('hide');
+        $('.continue').addClass('hide');
+
         $('.choose').removeClass('focus');
         $('.choose').find('.option-container').html(data);
         $('.choose').find('#selected_player').val('');
         $('.action').removeClass('hide');
 
         upgradeOptions();
+    });
+
+    socket.on('request_next', (data) => {
+        $('.rooms').addClass('hide');
+        $('.login_action').addClass('hide');
+        $('.action').addClass('hide');
+        $('.continue').removeClass('hide');
     });
 
     socket.on('set_username', (data) => {
@@ -198,6 +234,13 @@ $(document).ready(() => {
     socket.on('set_role', (data) => {
         console.log(`Message: ${data}`);
         $(".role_name").html(data);
+        $('.game-settings').addClass('hide');
+        $('.admin-only-override').addClass('hide');
+    });
+
+    socket.on('wait', (data) => {
+        $('.action').addClass('hide');
+        $('.continue').addClass('hide');
     });
 
     socket.on('set_explanation', (data) => {
@@ -209,12 +252,12 @@ $(document).ready(() => {
         console.log(`Message: ${data}`);
         $('.settings-header').html(data);
         $('.settings-listed').html('');
-        $('.game-settings').removeClass('hide')
-        $('.admin-only-override').addClass('hide')
+        $('.game-settings').removeClass('hide');
+        $('.admin-only-override').addClass('hide');
     });
 
     socket.on('hide_settings', (data) => {
-        $('.game-settings').addClass('hide')
+        $('.game-settings').addClass('hide');
     });
 
     socket.on('append_setting', (data) => {
@@ -223,8 +266,25 @@ $(document).ready(() => {
     });
 
     socket.on('show_admin_room', (data) => {
-        $('.admin-only-override').removeClass('hide')
+        $('.admin-only-override').removeClass('hide');
         $('.setting').attr('readonly', false);
+    });
+
+    socket.on('display_votes', (data) => {
+        $('.votes').html(data);
+    });
+
+    socket.on('set_role_img', (data) => {
+        $('.role_picture').find("img").addClass('hide');
+        $(data).removeClass('hide');
+    });
+
+    socket.on('hide_continue', (data) => {
+        $('.continue').addClass('hide');
+    });
+
+    socket.on('hide_action', (data) => {
+        $('.action').addClass('hide');
     });
 
     $('#login').on('click', () => {
@@ -251,15 +311,41 @@ $(document).ready(() => {
     });
 
     $('#save').on('click', () => {
-        var wolves_count = $('#wolves_count').val()
-        var witches_count = $('#witches_count').val()
-        var searchers_count = $('#searchers_count').val()
-        var hunter_count = $('#hunter_count').val()
-        var protector_count = $('#protector_count').val()
-        var armor_count = $('#armor_count').val()
+        var wolves_count = $('#wolves_count').val();
+        var witches_count = $('#witches_count').val();
+        var searchers_count = $('#searchers_count').val();
+        var hunter_count = $('#hunter_count').val();
+        var protector_count = $('#protector_count').val();
+        var armor_count = $('#armor_count').val();
 
         socket.emit('room_settings', {'wolves_count': wolves_count, 'witches_count': witches_count, 'searchers_count': searchers_count,
                                         'hunter_count': hunter_count, 'protector_count': protector_count, 'armor_count': armor_count});
+    });
+
+    $('#continue').on('click', () => {
+        socket.emit('player_next', '');
+    });
+
+    $('#vote').on('click', () => {
+        var voted_player = $('#selected_player').val();
+
+        socket.emit('player_vote', voted_player);
+    });
+
+    $('#start').on('click', () => {
+        socket.emit('start_game', '');
+    });
+
+    $('#leave').on('click', () => {
+        socket.emit('exit_room', '');
+    });
+
+    $('#debug1').on('click', () => {
+        $('').removeClass('hide');
+    });
+
+    $('#debug2').on('click', () => {
+        $('').removeClass('hide');
     });
 
     var open_count = 0;

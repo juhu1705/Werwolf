@@ -22,6 +22,31 @@
                 </p>
             </noscript>
         </div>
+        <div class="header">
+            <div class="role_picture">
+                <img id="wolf_img" src="{{ url_for('static', filename='pictures/wolf.png') }}">
+                <img class="hide" id="armor_img" src="{{ url_for('static', filename='pictures/armor.png') }}">
+                <img class="hide" id="guard_img" src="{{ url_for('static', filename='pictures/guard.png') }}">
+                <img class="hide" id="hunter_img" src="{{ url_for('static', filename='pictures/hunter.png') }}">
+                <img class="hide" id="searcher_img" src="{{ url_for('static', filename='pictures/searcher.png') }}">
+                <img class="hide" id="villager_img" src="{{ url_for('static', filename='pictures/villager.png') }}">
+                <img class="hide" id="witch_img" src="{{ url_for('static', filename='pictures/witch.png') }}">
+            </div>
+            <div class="informations">
+                <div class="side-content">
+                    <div class="username">Name: </div>
+                    <div class="room_name">Raum: </div>
+                    <div class="role_name">Rolle: </div>
+                    <div class="explanation">Erklärung: </div>
+                </div>
+                <div class="side-footer">
+                    <a href="{{ url_for('game.start') }}"><i class="fas fa-home"></i></a>
+                    <a href="{{ url_for('game.imprint') }}">Impressum</a>
+                    <a href="{{ url_for('game.privacy') }}">Datenschutz</a>
+                    <a href="{{ url_for('game.license') }}">Lizenzen</a>
+                </div>
+            </div>
+        </div>
         {% block content %}
         {% endblock %}
     </main>

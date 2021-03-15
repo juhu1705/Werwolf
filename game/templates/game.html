@@ -1,27 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="header">
-    <div class="role_picture">
-        <img src="{{ url_for('static', filename='pictures/wolf.png') }}">
-    </div>
-    <div class="informations">
-        <div class="side-content">
-            <div class="username">Name: </div>
-            <div class="room_name">Raum: </div>
-            <div class="role_name">Rolle: </div>
-            <div class="explanation">Erklärung: </div>
-        </div>
-        <div class="side-footer">
-            <a href="{{ url_for('game.imprint') }}">Impressum</a>
-            <a href="{{ url_for('game.privacy') }}">Datenschutz</a>
-            <a href="{{ url_for('game.license') }}">Lizenzen</a>
-        </div>
-    </div>
-</div>
 <div class="main">
     <div class="action_header"></div>
     <div class="action_text"></div>
+    <div class="votes"></div>
     <div class="login_action">
         <div class="input-div pass">
             <div class="i">
@@ -66,6 +49,11 @@
         <div class="settings-listed">
 
         </div>
+        <div class="confirm-field">
+                <button class="btnconfirm" id="leave" type="submit">
+                    <div><span>Verlassen</span></div><i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
         <div class="admin-only-override">
             <div class="confirm-field">
                 <button class="btnconfirm" id="save" type="submit">
@@ -105,6 +93,13 @@
                 <i class="fas fa-angle-down"></i>
             </div>
         </div>
+        <div class="confirm-field">
+            <button class="btnconfirm" id="vote" type="submit">
+                <div><span>Weiter</span></div><i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+    <div class="continue">
         <div class="confirm-field">
             <button class="btnconfirm" id="continue" type="submit">
                 <div><span>Weiter</span></div><i class="fas fa-chevron-right"></i>
