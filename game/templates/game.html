@@ -1,5 +1,11 @@
 {% extends 'base.html' %}
 
+{% block head %}
+<audio class="my_audio" preload="none">
+    <source src="{{ url_for('static', filename='sounds/witch_sound.mp3') }}" type="audio/mpeg">
+</audio>
+{% endblock %}
+
 {% block content %}
 <div class="main">
     <div class="action_header"></div>

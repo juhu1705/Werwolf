@@ -126,6 +126,8 @@ function upgradeOptions() {
 var socket = io.connect('http://' + document.domain + ":" + location.port);
 
 $(document).ready(() => {
+    $(".my_audio").trigger('load');
+
     socket.on('connect', () => {
         socket.send("I am connected");
         $('.rooms').addClass('hide');
@@ -316,10 +318,10 @@ $(document).ready(() => {
         var searchers_count = $('#searchers_count').val();
         var hunter_count = $('#hunter_count').val();
         var protector_count = $('#protector_count').val();
-        var armor_count = $('#armor_count').val();
+        var amor_count = $('#amor_count').val();
 
         socket.emit('room_settings', {'wolves_count': wolves_count, 'witches_count': witches_count, 'searchers_count': searchers_count,
-                                        'hunter_count': hunter_count, 'protector_count': protector_count, 'armor_count': armor_count});
+                                        'hunter_count': hunter_count, 'protector_count': protector_count, 'amor_count': amor_count});
     });
 
     $('#continue').on('click', () => {

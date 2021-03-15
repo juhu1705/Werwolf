@@ -123,7 +123,7 @@ def room_settings(data):
         emit('warn', "Spiel wurde bereits gestartet!", room=request.sid)
         return
     room.settings(wolves=data['wolves_count'], witches=data['witches_count'], searchers=data['searchers_count'],
-                  hunters=data['hunter_count'], protectors=data['protector_count'], armors=data['armor_count'])
+                  hunters=data['hunter_count'], protectors=data['protector_count'], amors=data['amor_count'])
 
 
 @socketio.on('start_game')
@@ -176,4 +176,6 @@ def on_player_next(data):
 
     if user.room is not None and user.room.started and is_user_contained(user.room.alive, user):
         print('Player ' + user.username + ' trying to vote in game ' + user.room.room_name)
+        user.room.handle_vote(user=user, vote_for='next')
+    if user.room is not None and user.room.started and user.room.admin is user and user.room.actual_step == 'end':
         user.room.handle_vote(user=user, vote_for='next')

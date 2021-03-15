@@ -11,7 +11,7 @@ role_descriptions = {'Werwolf': 'In der Nacht wachst du auf und wählst mit den 
                      'Seherin': 'Du hast die Gabe nachts in deiner Glaskugel die Identität deiner Mitspieler zu '
                                 'erfahren, doch leider kannst du dich jede Nacht nur auf einen anderen Spieler '
                                 'konzentrieren.',
-                     'Armor': 'Du besitzt wahrlich die Macht der Liebe. Zu Beginn des Spiels wählst du ein '
+                     'Amor': 'Du besitzt wahrlich die Macht der Liebe. Zu Beginn des Spiels wählst du ein '
                               'Liebespaar, das für den Rest des Spiels nicht mehr ohne den Partner existieren kann.',
                      'Jäger': 'Auf der Jagt hast du gelernt so schnell zu reagieren, das du selbst im Sterben noch '
                               'eine Person tödlich verletzen kannst.',
@@ -21,7 +21,7 @@ role_descriptions = {'Werwolf': 'In der Nacht wachst du auf und wählst mit den 
                                      'deine Aufgabe ist es die Werwölfe zu finden und am Tag in der Abstimmung zu '
                                      'entarnen und dann zu lynchen.'}
 
-role_imgs = {'Werwolf': '#wolf_img', 'Hexe': '#witch_img', 'Seherin': '#searcher_img', 'Armor': '#armor_img',
+role_imgs = {'Werwolf': '#wolf_img', 'Hexe': '#witch_img', 'Seherin': '#searcher_img', 'Amor': '#amor_img',
              'Jäger': '#hunter_img', 'Beschützer': '#guard_img', 'Dorfbewohner': '#villager_img'}
 
 
@@ -32,9 +32,9 @@ def send_userdata(user):
 
 
 def pack_voteable_player(name):
-    return """<div class="option """ + name + """">
-                        <input type="radio" class="radio" id="sidebar-""" + name + """" name="category">
-                        <label for="sidebar-""" + name + """">""" + name + """</label></div>"""
+    return """<div class="option">
+                        <input type="radio" class="radio" id="sidebar-""" + str(hash(name)) + """" name="category">
+                        <label for="sidebar-""" + str(hash(name)) + """">""" + name + """</label></div>"""
 
 
 def get_witch_votes():
@@ -70,7 +70,7 @@ class Room:
         self.wolves_count = 2
         self.witches_count = 1
         self.searchers_count = 1
-        self.armor_count = 1
+        self.amor_count = 1
         self.hunter_count = 0
         self.protector_count = 0
         self.wolves_choose = None
@@ -119,9 +119,9 @@ class Room:
              'id="protector_count" value="' + str(
                  self.protector_count) + '" readonly="readonly"></input></div>', room=user.sid)
         emit('append_setting',
-             '<div class="line"><div>Armor:</div><input class="setting" type="number" name="armor_count" '
-             'id="armor_count" value="' + str(
-                 self.armor_count) + '" readonly="readonly"></input></div>', room=user.sid)
+             '<div class="line"><div>Amor:</div><input class="setting" type="number" name="amor_count" '
+             'id="amor_count" value="' + str(
+                 self.amor_count) + '" readonly="readonly"></input></div>', room=user.sid)
 
         if self.admin is user:
             emit('show_admin_room', '', room=user.sid)
@@ -180,6 +180,7 @@ class Room:
         villager_count = 0
 
         for user in self.alive:
+            user.dead = False
             if user.is_evil():
                 wolves_count += 1
             else:
@@ -222,9 +223,33 @@ class Room:
             emit('display_text', text, room=player.sid)
             if player is self.admin:
                 emit('request_next', '', room=player.sid)
-                self.wait_for_votes_from.append(player)
+        print(self.admin.username)
+        if self.admin is not None:
+            self.wait_for_votes_from.append(self.admin)
 
     def start_game(self):
+        self.alive = []
+        self.dead = []
+        self.master = None
+
+        self.wolves_choose = None
+        self.started = False
+        self.deletable = False
+        self.votes = {}
+        self.wait_for_votes_from = []
+        self.actual_step = ""
+        self.allow_tie = True
+        self.loved1 = None
+        self.loved2 = None
+        self.protected = None
+        self.to_kill = None
+        self.killed_due_night = []
+        self.used_heal = []
+        self.used_kill = []
+        self.killed_list = []
+        self.before_hunter_kill = ''
+        self.hunter_killed = []
+        self.lynched = None
         self.started = True
 
         print('Calculate roles for game ' + self.room_name)
@@ -248,9 +273,9 @@ class Room:
             else:
                 break
 
-        for i in range(0, self.armor_count):
+        for i in range(0, self.amor_count):
             if len(users) > i:
-                users.pop(0).role = 'Armor'
+                users.pop(0).role = 'Amor'
             else:
                 break
 
@@ -300,20 +325,20 @@ class Room:
 
         return to_return
 
-    def settings(self, wolves, witches, searchers, armors, hunters, protectors):
+    def settings(self, wolves, witches, searchers, amors, hunters, protectors):
         self.wolves_count = int(wolves)
         self.witches_count = int(witches)
         self.searchers_count = int(searchers)
-        self.armor_count = int(armors)
+        self.amor_count = int(amors)
         self.hunter_count = int(hunters)
         self.protector_count = int(protectors)
 
-        if self.armor_count > 1:
-            self.armor_count = 1
+        if self.amor_count > 1:
+            self.amor_count = 1
         if self.wolves_count < 1:
             self.wolves_count = 1
-        if self.armor_count < 0:
-            self.armor_count = 0
+        if self.amor_count < 0:
+            self.amor_count = 0
         if self.witches_count < 0:
             self.witches_count = 0
         if self.searchers_count < 0:
@@ -341,7 +366,7 @@ class Room:
             self.alive.remove(user)
             if self.master is user:
                 if len(self.alive) > 0:
-                    self.master = self.alive[random.randint(0, self.alive.__len__())]
+                    self.master = self.alive[random.randrange(0, len(self.alive))]
                     for player in self.game_users:
                         emit('info', 'Der Bürgermeister ist gestorben! Der neue Bürgermeister ist: ' +
                              self.master.username, room=player.sid)
@@ -355,6 +380,7 @@ class Room:
             self.check_for_winner()
 
     def handle_vote(self, user, vote_for):
+        print('Check vote for ' + user.username)
         if is_user_contained(self.wait_for_votes_from, user):
             self.votes[user] = vote_for
             if self.actual_step == 'witch1' and vote_for == 'Ja':
@@ -449,6 +475,7 @@ class Room:
         self.votes = {}
         self.wait_for_votes_from = []
         print(self.votes)
+        found_player = False
         for player in self.alive:
             if role == 'all' or player.role == role:
                 if role == 'Hexe' and self.actual_step == 'witch1' and self.used_heal.__contains__(player):
@@ -463,6 +490,8 @@ class Room:
                 emit('display_text', message, room=player.sid)
                 emit('put_choices', votes, room=player.sid)
                 self.wait_for_votes_from.append(player)
+                found_player = True
+        return found_player
 
     def send_message_except(self, role, header, message):
         for player in self.alive:
@@ -552,18 +581,18 @@ class Room:
     def handle_last_step(self):
         print('Handle step ' + self.actual_step)
 
-        if self.actual_step == 'armor1':
+        if self.actual_step == 'amor1':
             voted_player = self.get_voted_player()
             print('Loved1 ' + voted_player.username)
             if voted_player is None:
                 self.actual_step = 'start'
                 return
             self.loved1 = voted_player
-        elif self.actual_step == 'armor2':
+        elif self.actual_step == 'amor2':
             voted_player = self.get_voted_player()
             print('Loved2 ' + voted_player.username)
             if voted_player is None or voted_player is self.loved1:
-                self.actual_step = 'armor1'
+                self.actual_step = 'amor1'
                 return
             self.loved2 = voted_player
         elif self.actual_step == 'protector':
@@ -608,8 +637,10 @@ class Room:
             for user in self.votes.values():
                 self.kill(user)
         elif self.actual_step == 'end':
-            print('End game')
+            print('Reset game')
 
+            self.alive = []
+            self.dead = []
             self.started = False
             self.votes = {}
             self.wait_for_votes_from = []
@@ -624,6 +655,7 @@ class Room:
             self.killed_list = []
             self.before_hunter_kill = ''
             self.hunter_killed = []
+            self.master = None
 
             for player in self.game_users:
                 emit('display_text', "Spieler: ", room=player.sid)
@@ -654,30 +686,31 @@ class Room:
     def next_step(self):
         print('Next step ' + self.actual_step)
         if self.actual_step == '':
+            self.clear_votes()
             self.actual_step = 'start'
             self.request_player_continue(role='all', header='Spiel starten', message='Drücke weiter um im Spiel dabei '
                                                                                      'zu sein!')
         elif self.actual_step == 'start':
-            if not self.role_is_present('Armor'):
+            if not self.role_is_present('Amor'):
                 self.actual_step = 'loved'
                 self.next_step()
                 return
 
-            self.actual_step = 'armor1'
-            self.send_message_except(role='Armor', header='Warte bis du and der Reihe bist',
+            self.actual_step = 'amor1'
+            self.send_message_except(role='Amor', header='Warte bis du and der Reihe bist',
                                      message='Ein seltsamer Duft weht dir in die Nase und aus der Ferne hörst du das '
                                              'zischen eines Pfeils.')
-            self.request_player_vote(role='Armor', header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
+            self.request_player_vote(role='Amor', header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
                                                                                        'auf den ersten Liebespartner '
                                                                                        'den du wählst!',
                                      votes=make_voteable_player_list(self.get_player_by_role('all')))
-        elif self.actual_step == 'armor1':
-            self.actual_step = 'armor2'
-            self.request_player_vote(role='Armor', header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
+        elif self.actual_step == 'amor1':
+            self.actual_step = 'amor2'
+            self.request_player_vote(role='Amor', header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
                                                                                        'auf den zweiten Liebespartner '
                                                                                        'den du wählst!',
                                      votes=make_voteable_player_list(self.get_player_except([self.loved1])))
-        elif self.actual_step == 'armor2':
+        elif self.actual_step == 'amor2':
             self.actual_step = 'loved'
             self.votes = {}
             self.wait_for_votes_from = [self.loved1, self.loved2]
@@ -712,6 +745,7 @@ class Room:
                                              'Glaskugel zu enttarnen.', votes=make_voteable_player_list(self.alive))
         elif self.actual_step == 'searcher':
             if not self.role_is_present('Beschützer'):
+                self.protected = None
                 self.actual_step = 'protector'
                 self.next_step()
                 return
@@ -758,11 +792,12 @@ class Room:
             self.send_message_except(role='Hexe', header='Warte bis du an der Reihe bist',
                                      message='Betörende Düfte liegen über der Stadt und du hörst schaurige Wörter in '
                                              'deinen Träumen!')
-            self.request_player_vote(role='Hexe', header='Die Hexen erwachen',
+            if not self.request_player_vote(role='Hexe', header='Die Hexen erwachen',
                                      message=self.to_kill.username + ' wurde von den Werwölfen verwundet. Möchtest du '
                                                                      'ihn '
                                                                      'heilen?',
-                                     votes=get_witch_votes())
+                                     votes=get_witch_votes()):
+                self.next_step()
         elif self.actual_step == 'witch1':
             self.actual_step = 'witch2'
             self.allow_tie = True
@@ -770,10 +805,12 @@ class Room:
             self.send_message_except(role='Hexe', header='Warte bis du an der Reihe bist',
                                      message='Betörende Düfte liegen über der Stadt und du hörst schaurige Wörter in '
                                              'deinen Träumen!')
-            self.request_player_vote(role='Hexe', header='Die Hexen erwachen',
+            if not self.request_player_vote(role='Hexe', header='Die Hexen erwachen',
                                      message='Möchtest du jemandem noch deinen Todestrank einflößen?',
                                      votes="""</div><div class="option Nein"><input type="radio" class="radio" id="sidebar-Nein" name="category"><label for="sidebar-Nein">Nein</label></div>""" + make_voteable_player_list(
-                                         self.alive))
+                                         self.alive)):
+                self.handle_last_step()
+                self.next_step()
         elif self.actual_step == 'witch2':
             self.actual_step = 'day'
             happening = ""
@@ -833,6 +870,8 @@ class Room:
                                              'deine Waffe und schießt auf...',
                                      votes=make_voteable_player_list(self.alive))
         elif self.actual_step == 'end' and not self.started:
+            print('End game')
+            self.clear_votes()
             self.actual_step = ''
         if self.actual_step != 'end' and self.actual_step != '':
             self.display_dead_screens()

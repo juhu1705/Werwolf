@@ -10,6 +10,8 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/3.1.2/socket.io.js" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}" crossorigin="anonymous"></script>
+    {% block head %}
+    {% endblock %}
 </head>
 <body>
 <div id="page">
@@ -25,7 +27,7 @@
         <div class="header">
             <div class="role_picture">
                 <img id="wolf_img" src="{{ url_for('static', filename='pictures/wolf.png') }}">
-                <img class="hide" id="armor_img" src="{{ url_for('static', filename='pictures/armor.png') }}">
+                <img class="hide" id="amor_img" src="{{ url_for('static', filename='pictures/amor.png') }}">
                 <img class="hide" id="guard_img" src="{{ url_for('static', filename='pictures/guard.png') }}">
                 <img class="hide" id="hunter_img" src="{{ url_for('static', filename='pictures/hunter.png') }}">
                 <img class="hide" id="searcher_img" src="{{ url_for('static', filename='pictures/searcher.png') }}">
