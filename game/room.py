@@ -192,11 +192,13 @@ class Room:
         elif wolves_count > 0 and villager_count == 0:
             self.display_end(header='Die Werwölfe haben gewonnen!',
                              text='Die Dorfbewohner haben die wahren Feinde ihres Dorfes wohl erst zu spät erkannt!')
+            self.send_sound_event_to_players(event_name='wolves_win')
             self.actual_step = 'end'
         elif wolves_count == 0 and villager_count > 0:
             self.display_end(header='Die Dorfbewohner haben gewonnen!',
                              text='Siegreich stehen sie um den Kadawer des letzten Wolfes und sind froh endlich '
                                   'wieder in Ruhe schlafen zu können!')
+            self.send_sound_event_to_players(event_name='village_win')
             self.actual_step = 'end'
         elif wolves_count == 1 and villager_count == 1:
             wolves = None
@@ -212,6 +214,7 @@ class Room:
                         self.display_end('Das Liebespaar hat gewonnen!', 'Listig haben sie gemeinsam alle Werwölfe und '
                                                                          'Dorfbewohner hintergangen und leben nun in '
                                                                          'Liebe allein bis ans Ende ihrer Tage.')
+                        self.send_sound_event_to_players(event_name='loved_win')
                         self.actual_step = 'end'
 
     def display_end(self, header, text):
@@ -578,6 +581,11 @@ class Room:
                 return True
         return False
 
+    def send_sound_event_to_players(self, event_name):
+        for player in self.game_users:
+            if player.sounds_active:
+                emit('play_sound', event_name, room=player.sid)
+
     def handle_last_step(self):
         print('Handle step ' + self.actual_step)
 
@@ -698,12 +706,13 @@ class Room:
 
             self.actual_step = 'amor1'
             self.send_message_except(role='Amor', header='Warte bis du and der Reihe bist',
-                                     message='Ein seltsamer Duft weht dir in die Nase und aus der Ferne hörst du das '
+                                     message='Ein lieblicher Duft weht dir in die Nase und aus der Ferne hörst du das '
                                              'zischen eines Pfeils.')
             self.request_player_vote(role='Amor', header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
-                                                                                       'auf den ersten Liebespartner '
-                                                                                       'den du wählst!',
+                                                                                      'auf den ersten Liebespartner '
+                                                                                      'den du wählst!',
                                      votes=make_voteable_player_list(self.get_player_by_role('all')))
+            self.send_sound_event_to_players(event_name='amor')
         elif self.actual_step == 'amor1':
             self.actual_step = 'amor2'
             self.request_player_vote(role='Amor', header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
@@ -729,6 +738,7 @@ class Room:
             emit('display_text', 'Du siehst ' + self.loved1.username + ' in die Augen und weißt das du nie wieder ohne '
                                                                        'ihn leben können wirst', room=self.loved2.sid)
             emit('request_next', '', room=self.loved2.sid)
+            self.send_sound_event_to_players(event_name='loved')
         elif self.actual_step == 'loved':
             if not self.role_is_present('Seherin'):
                 self.actual_step = 'searcher'
@@ -743,6 +753,7 @@ class Room:
             self.request_player_vote(role='Seherin', header='Die Seherinnen sind nun am Zug!',
                                      message='Du wachst auf um heimlich einen Mitspieler diese Nacht mithilfe deiner '
                                              'Glaskugel zu enttarnen.', votes=make_voteable_player_list(self.alive))
+            self.send_sound_event_to_players(event_name='searcher')
         elif self.actual_step == 'searcher':
             if not self.role_is_present('Beschützer'):
                 self.protected = None
@@ -766,6 +777,7 @@ class Room:
                                                  'Werwölfe beschützen, doch wäre es zu auffällig zweimal hintereinander '
                                                  'die gleiche Person zu beschützen',
                                          votes=make_voteable_player_list(self.get_player_except([self.protected])))
+            self.send_sound_event_to_players(event_name='protector')
         elif self.actual_step == 'protector':
             if not self.role_is_present('Werwolf'):
                 self.actual_step = 'witch1'
@@ -781,6 +793,7 @@ class Room:
                                              'auf die Jagt im Dorf! Wen werdet ihr euch diese Nacht wohl vornehmen?',
                                      votes=make_voteable_player_list(self.alive))
             self.show_votes()
+            self.send_sound_event_to_players(event_name='wolves')
         elif self.actual_step == 'wolves':
             if not self.role_is_present('Hexe'):
                 self.actual_step = 'witch2'
@@ -798,6 +811,8 @@ class Room:
                                                                      'heilen?',
                                      votes=get_witch_votes()):
                 self.next_step()
+                return
+            self.send_sound_event_to_players(event_name='witch_heal')
         elif self.actual_step == 'witch1':
             self.actual_step = 'witch2'
             self.allow_tie = True
@@ -811,6 +826,8 @@ class Room:
                                          self.alive)):
                 self.handle_last_step()
                 self.next_step()
+                return
+            self.send_sound_event_to_players(event_name='witch_kill')
         elif self.actual_step == 'witch2':
             self.actual_step = 'day'
             happening = ""
@@ -823,6 +840,7 @@ class Room:
             self.killed_list = []
 
             self.request_player_continue(role='all', header='Es wird Tag', message=happening)
+            self.send_sound_event_to_players(event_name='day_start')
         elif self.actual_step == 'day':
             if self.master is None:
                 self.actual_step = 'vote_master'
@@ -830,6 +848,7 @@ class Room:
                 self.request_player_vote(role='all', header='Bürgermeisterwahl', message='Wählt einen Bürgermeister',
                                          votes=make_voteable_player_list(self.alive))
                 self.show_votes()
+                self.send_sound_event_to_players(event_name='master')
             else:
                 self.actual_step = 'display_master'
                 self.next_step()
@@ -846,6 +865,7 @@ class Room:
                                              'entschieden heute eine Abstimmung durchzuführen, um den Täter zu '
                                              'lynchen!', votes=make_voteable_player_list(self.alive))
             self.show_votes()
+            self.send_sound_event_to_players(event_name='voting')
         elif self.actual_step == 'vote':
             self.actual_step = 'day_end'
             self.clear_votes()
@@ -860,6 +880,7 @@ class Room:
                 self.killed_list = []
 
                 self.request_player_continue(role='all', header='Ergebniss', message=happening)
+            self.send_sound_event_to_players(event_name='day_end')
         elif self.actual_step == 'day_end':
             self.actual_step = 'loved'
             self.next_step()
@@ -869,6 +890,7 @@ class Room:
                                      message='Doch noch bevor dein letzter Atem deinen Körper verlässt ziehst du '
                                              'deine Waffe und schießt auf...',
                                      votes=make_voteable_player_list(self.alive))
+            self.send_sound_event_to_players(event_name='hunter')
         elif self.actual_step == 'end' and not self.started:
             print('End game')
             self.clear_votes()

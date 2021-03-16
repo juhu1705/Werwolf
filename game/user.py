@@ -11,6 +11,7 @@ class User:
         self.dead = False
         self.alive = False
         self.is_mayor = False
+        self.sounds_active = False
 
     def join_room(self, room):
         if self.room is not None:

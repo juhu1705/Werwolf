@@ -1,12 +1,57 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<audio class="my_audio" preload="none">
-    <source src="{{ url_for('static', filename='sounds/witch_sound.mp3') }}" type="audio/mpeg">
+<audio class="my_audio" id="amor" preload="none">
+    <source src="{{ url_for('static', filename='sounds/amor.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="day_start" preload="none">
+    <source src="{{ url_for('static', filename='sounds/day_start.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="day_end" preload="none">
+    <source src="{{ url_for('static', filename='sounds/day_end.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="hunter" preload="none">
+    <source src="{{ url_for('static', filename='sounds/hunter.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="loved" preload="none">
+    <source src="{{ url_for('static', filename='sounds/loved.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="master" preload="none">
+    <source src="{{ url_for('static', filename='sounds/master.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="protector" preload="none">
+    <source src="{{ url_for('static', filename='sounds/protector.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="searcher" preload="none">
+    <source src="{{ url_for('static', filename='sounds/searcher.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="voting" preload="none">
+    <source src="{{ url_for('static', filename='sounds/voting.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="witch_heal" preload="none">
+    <source src="{{ url_for('static', filename='sounds/witch_heal.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="witch_kill" preload="none">
+    <source src="{{ url_for('static', filename='sounds/witch_kill.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="wolves" preload="none">
+    <source src="{{ url_for('static', filename='sounds/wolves.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="wolves_win" preload="none">
+    <source src="{{ url_for('static', filename='sounds/wolves_win.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="village_win" preload="none">
+    <source src="{{ url_for('static', filename='sounds/village_win.m4a') }}" type="audio/mpeg">
+</audio>
+<audio class="my_audio" id="loved_win" preload="none">
+    <source src="{{ url_for('static', filename='sounds/loved_win.m4a') }}" type="audio/mpeg">
 </audio>
 {% endblock %}
 
 {% block content %}
+<div id="mute">
+    <i class="fas fa-volume-mute"></i>
+</div>
 <div class="main">
     <div class="action_header"></div>
     <div class="action_text"></div>

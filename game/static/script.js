@@ -289,6 +289,25 @@ $(document).ready(() => {
         $('.action').addClass('hide');
     });
 
+    socket.on('play_sound', (data) => {
+        $('.my_audio').trigger('pause');
+        var audios = document.querySelectorAll(".my_audio");
+        audios.forEach(audio => {
+            audio.currentTime = 0;
+        });
+        $("#" + data).trigger('play');
+    });
+
+    socket.on('display_volume', (data) => {
+        if(data == 'on') {
+            $('#mute').find('i').removeClass('fa-volume-mute');
+            $('#mute').find('i').addClass('fa-volume-up');
+        } else {
+            $('#mute').find('i').removeClass('fa-volume-up');
+            $('#mute').find('i').addClass('fa-volume-mute');
+        }
+    });
+
     $('#login').on('click', () => {
         var name = $('#username').val();
         if(name == '') {
@@ -375,6 +394,10 @@ $(document).ready(() => {
     $('.input').on('focus', focusFunc);
     $('.input').on('blur', blurFunc);
 
-   setChoices();
+    $('#mute').on('click', () => {
+        socket.emit('mute_change', '');
+    })
+
+    setChoices();
 });
 

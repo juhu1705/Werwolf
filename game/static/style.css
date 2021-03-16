@@ -464,6 +464,23 @@ input {
     margin-left: 0.25rem;
 }
 
+/*  ===========
+    MUTE/UNMUTE
+    ===========     */
+
+#mute {
+    z-index: 10;
+    background: gray;
+    border-radius: 5px 0 0 5px;
+    position: fixed;
+    right: 0;
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
+    box-shadow: 0 15px 20px rgba(255, 255, 255, 0.2);
+    transition: all .5s ease;
+    top: 1rem;
+    cursor: pointer;
+}
+
 /*  ==============
     FLASH MESSAGES
     ==============  */
@@ -530,4 +547,18 @@ a {
 
 a:hover {
     border-bottom: 1px solid white;
+}
+
+/*  =================
+    Handy Anpassungen
+    =================   */
+
+@media only screen and (max-width: 70em) {
+    .main {
+        padding-top: 6rem;
+    }
+
+    .line {
+        grid-template-columns: 1fr 1fr;
+    }
 }

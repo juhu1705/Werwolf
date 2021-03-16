@@ -54,6 +54,7 @@ def user_login(username):
     emit('display_header', "Choose your room", broadcast=False)
     emit('display_text', "Join a room or create your own one!", broadcast=False)
     emit('show_rooms', '', broadcast=False)
+    emit('display_volume', 'off', broadcast=False, room=request.sid)
     print(users)
 
 
@@ -179,3 +180,16 @@ def on_player_next(data):
         user.room.handle_vote(user=user, vote_for='next')
     if user.room is not None and user.room.started and user.room.admin is user and user.room.actual_step == 'end':
         user.room.handle_vote(user=user, vote_for='next')
+
+
+@socketio.on('mute_change')
+def mute_change(data):
+    if request.sid in sids:
+        user = sids[request.sid]
+        user.sounds_active = not user.sounds_active
+        if user.sounds_active:
+            emit('display_volume', 'on', broadcast=False, room=request.sid)
+        else:
+            emit('display_volume', 'off', broadcast=False, room=request.sid)
+    else:
+        emit('warn', 'You must choose a username to use this function', broadcast=False, room=request.sid)
