@@ -8,8 +8,7 @@ from game.user import User
 from . import game
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_mapping(SECRET_KEY='219z4r34äc3ü696567ß50917325#897235jhkle65bju#5',
-                        DATABASE=os.path.join(app.instance_path, 'wolves.sqlite'))
+app.config.from_mapping(SECRET_KEY='219z4r34äc3ü696567ß50917325#897235jhkle65bju#5')
 
 os.makedirs(app.instance_path, exist_ok=True)
 

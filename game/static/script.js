@@ -123,7 +123,7 @@ function upgradeOptions() {
     });
 }
 
-var socket = io.connect('http://' + document.domain + ":" + location.port);
+var socket = io.connect('https://' + document.domain + ":" + location.port);
 
 $(document).ready(() => {
     $(".my_audio").trigger('load');

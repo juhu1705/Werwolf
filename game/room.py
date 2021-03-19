@@ -152,7 +152,8 @@ class Room:
             self.alive.remove(user)
         if is_user_contained(self.dead, user):
             self.dead.remove(user)
-        self.game_users.remove(user)
+        if user in self.game_users:
+            self.game_users.remove(user)
 
         if user is self.admin:
             if self.game_users.__len__() > 0:
