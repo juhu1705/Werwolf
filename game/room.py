@@ -155,6 +155,15 @@ class Room:
         if user in self.game_users:
             self.game_users.remove(user)
 
+        if user is self.loved1 or user is self.loved2:
+            self.loved1 = None
+            self.loved2 = None
+
+        if user in self.wait_for_votes_from:
+            self.wait_for_votes_from.remove(user)
+            if user in self.votes:
+                self.votes.pop(user)
+
         if user is self.admin:
             if self.game_users.__len__() > 0:
                 self.admin = self.game_users[0]
@@ -175,6 +184,15 @@ class Room:
                 emit('set_role', 'Rolle: ', room=player.sid, broadcast=False)
                 emit('set_explanation', 'Beschreibung: ', room=player.sid, broadcast=False)
                 self.show_settings(user=player)
+
+        if len(self.votes) is len(self.wait_for_votes_from):
+            if not self.allow_tie and self.is_tie():
+                for player in self.wait_for_votes_from:
+                    emit('correct_vote', '', room=player.sid)
+                    emit('warn', 'Tie is not allowed, please vote another person!', room=player.sid)
+            else:
+                self.handle_last_step()
+                self.next_step()
 
     def check_for_winner(self):
         wolves_count = 0
@@ -706,7 +724,7 @@ class Room:
                 return
 
             self.actual_step = 'amor1'
-            self.send_message_except(role='Amor', header='Warte bis du and der Reihe bist',
+            self.send_message_except(role='Amor', header='Warte bis du an der Reihe bist',
                                      message='Ein lieblicher Duft weht dir in die Nase und aus der Ferne hörst du das '
                                              'zischen eines Pfeils.')
             self.request_player_vote(role='Amor', header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
