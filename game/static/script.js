@@ -361,12 +361,8 @@ $(document).ready(() => {
         socket.emit('exit_room', '');
     });
 
-    $('#debug1').on('click', () => {
-        $('').removeClass('hide');
-    });
-
-    $('#debug2').on('click', () => {
-        $('').removeClass('hide');
+    $('#reload').on('click', () => {
+        socket.emit('reload', '');
     });
 
     var open_count = 0;
@@ -396,8 +392,34 @@ $(document).ready(() => {
 
     $('#mute').on('click', () => {
         socket.emit('mute_change', '');
-    })
+    });
 
     setChoices();
+
+    $.fn.rotate = function(degrees, step, current) {
+        var self = $(this);
+        current = current || 0;
+        step = step || 5;
+        current += step;
+        self.css({
+            '-webkit-transform' : 'rotate(' + current + 'deg)',
+            '-moz-transform' : 'rotate(' + current + 'deg)',
+            '-ms-transform' : 'rotate(' + current + 'deg)',
+            'transform' : 'rotate(' + current + 'deg)'
+        });
+        if (current != degrees) {
+            setTimeout(function() {
+                self.rotate(degrees, step, current);
+            }, 5);
+        }
+    };
+
+    $('#reload').on('click', () => {
+        var box = $('#reload')
+        box.addClass("rotate");
+        setTimeout(() => {
+            box.removeClass("rotate");
+        },2000);
+    });
 });
 

@@ -12,7 +12,7 @@ role_descriptions = {'Werwolf': 'In der Nacht wachst du auf und wählst mit den 
                                 'erfahren, doch leider kannst du dich jede Nacht nur auf einen anderen Spieler '
                                 'konzentrieren.',
                      'Amor': 'Du besitzt wahrlich die Macht der Liebe. Zu Beginn des Spiels wählst du ein '
-                              'Liebespaar, das für den Rest des Spiels nicht mehr ohne den Partner existieren kann.',
+                             'Liebespaar, das für den Rest des Spiels nicht mehr ohne den Partner existieren kann.',
                      'Jäger': 'Auf der Jagt hast du gelernt so schnell zu reagieren, das du selbst im Sterben noch '
                               'eine Person tödlich verletzen kannst.',
                      'Beschützer': 'Jede Nacht wählst du einen Mitspieler den du beschützen willst, dieser Spieler '
@@ -515,6 +515,22 @@ class Room:
                 found_player = True
         return found_player
 
+    def resend_player_vote(self, player, header, message, votes):
+        if player in self.votes:
+            return
+        if player in self.wait_for_votes_from:
+            emit('display_header', header, room=player.sid)
+            emit('display_text', message, room=player.sid)
+            emit('put_choices', votes, room=player.sid)
+
+    def resend_player_next(self, player, header, message):
+        if player in self.votes:
+            return
+        if player in self.wait_for_votes_from:
+            emit('display_header', header, room=player.sid)
+            emit('display_text', message, room=player.sid)
+            emit('request_next', '', room=player.sid)
+
     def send_message_except(self, role, header, message):
         for player in self.alive:
             if player.role is not role:
@@ -710,6 +726,97 @@ class Room:
                 if self.lynched is not None:
                     self.kill(self.lynched)
 
+    def reload_for_player(self, player):
+        if self.actual_step == 'start':
+            self.resend_player_next(player=player, header='Spiel starten', message='Drücke weiter um im Spiel dabei '
+                                                                                   'zu sein!')
+        elif self.actual_step == 'amor1' and player.role == 'Amor':
+            self.resend_player_vote(player=player, header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
+                                                                                       'auf den ersten Liebespartner '
+                                                                                       'den du wählst!',
+                                    votes=make_voteable_player_list(self.get_player_by_role('all')))
+
+        elif self.actual_step == 'amor2' and player.role == 'Amor':
+            self.resend_player_vote(player=player, header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
+                                                                                       'auf den zweiten Liebespartner '
+                                                                                       'den du wählst!',
+                                    votes=make_voteable_player_list(self.get_player_except([self.loved1])))
+
+        elif self.actual_step == 'loved':
+            if player in self.votes:
+                return
+            if player in self.wait_for_votes_from:
+                emit('request_next', '', room=player.sid)
+        elif self.actual_step == 'searcher':
+            self.resend_player_vote(player=player, header='Die Seherinnen sind nun am Zug!',
+                                    message='Du wachst auf um heimlich einen Mitspieler diese Nacht mithilfe deiner '
+                                            'Glaskugel zu enttarnen.', votes=make_voteable_player_list(self.alive))
+        elif self.actual_step == 'protector':
+            if self.protected is None:
+                self.resend_player_vote(player=player, header='Wen möchtest du beschützen?',
+                                        message='Du kannst jede Nacht eine Person vor dem grausigen Tod durch die '
+                                                'Werwölfe beschützen, doch wäre es zu auffällig zweimal hintereinander '
+                                                'die gleiche Person zu beschützen',
+                                        votes=make_voteable_player_list(self.alive))
+            else:
+                expected = self.get_player_except([self.protected])
+                if len(expected) < 1:
+                    self.protected = None
+                    self.actual_step = 'protector'
+                    self.next_step()
+                    return
+                self.resend_player_vote(player=player, header='Wen möchtest du beschützen?',
+                                        message='Du kannst jede Nacht eine Person vor dem grausigen Tod durch die '
+                                                'Werwölfe beschützen, doch wäre es zu auffällig zweimal hintereinander '
+                                                'die gleiche Person zu beschützen',
+                                        votes=make_voteable_player_list(expected))
+        elif self.actual_step == 'wolves':
+            self.resend_player_vote(player=player, header='Die Werwölfe erwachen',
+                                    message='Hungrig wachst du auf und findest die anderen Werwölfe! Ihr macht euch '
+                                            'auf die Jagt im Dorf! Wen werdet ihr euch diese Nacht wohl vornehmen?',
+                                    votes=make_voteable_player_list(self.alive))
+        elif self.actual_step == 'witch1':
+            self.resend_player_vote(player=player, header='Die Hexen erwachen',
+                                    message=self.to_kill.username + ' wurde von den Werwölfen verwundet. Möchtest du '
+                                                                    'ihn '
+                                                                    'heilen?',
+                                    votes=get_witch_votes())
+        elif self.actual_step == 'witch2':
+            self.resend_player_vote(player=player, header='Die Hexen erwachen',
+                                    message='Möchtest du jemandem noch deinen Todestrank einflößen?',
+                                    votes="""</div><div class="option Nein"><input type="radio" class="radio" id="sidebar-Nein" name="category"><label for="sidebar-Nein">Nein</label></div>""" + make_voteable_player_list(
+                                        self.alive))
+        elif self.actual_step == 'day':
+            self.resend_player_next(player=player, header='Es wird Tag', message='')
+        elif self.actual_step == 'vote_master':
+            self.resend_player_vote(player=player, header='Bürgermeisterwahl', message='Wählt einen Bürgermeister',
+                                    votes=make_voteable_player_list(self.alive))
+        elif self.actual_step == 'display_master':
+            self.resend_player_next(player=player, header='Ihr habt einen Bürgermeister gewählt!',
+                                    message='Euer Bürgermeister ist ' + self.master.username)
+        elif self.actual_step == 'vote':
+            self.resend_player_vote(player=player, header='Abstimmung',
+                                    message='Nach den schrecklichen Vorkommnissen in der Nacht hab ihr euch '
+                                            'entschieden heute eine Abstimmung durchzuführen, um den Täter zu '
+                                            'lynchen!', votes=make_voteable_player_list(self.alive))
+        elif self.actual_step == 'day_end':
+            if self.lynched is None:
+                self.resend_player_next(player=player, header='Ergebniss', message='Es wurde keiner gelynched!')
+            else:
+                happening = self.lynched.username + ' wurde gelynched! Nach Durchsuchung seiner Bleibe stellt ihr ' \
+                                                    'fest: Er war ' + self.lynched.role + '<br> '
+
+                for user in self.killed_list:
+                    happening += user.username + ' ist verstorben! Er war ' + user.role + '.<br>'
+                self.killed_list = []
+
+                self.resend_player_next(player=player, header='Ergebniss', message=happening)
+        elif self.actual_step == 'hunter_kill':
+            self.resend_player_vote(player=player, header='Du stirbst...',
+                                    message='Doch noch bevor dein letzter Atem deinen Körper verlässt ziehst du '
+                                            'deine Waffe und schießt auf...',
+                                    votes=make_voteable_player_list(self.alive))
+
     def next_step(self):
         print('Next step ' + self.actual_step)
         if self.actual_step == '':
@@ -735,8 +842,8 @@ class Room:
         elif self.actual_step == 'amor1':
             self.actual_step = 'amor2'
             self.request_player_vote(role='Amor', header='Liebespaar wählen', message='Schieße deinen Liebespfeil '
-                                                                                       'auf den zweiten Liebespartner '
-                                                                                       'den du wählst!',
+                                                                                      'auf den zweiten Liebespartner '
+                                                                                      'den du wählst!',
                                      votes=make_voteable_player_list(self.get_player_except([self.loved1])))
         elif self.actual_step == 'amor2':
             self.actual_step = 'loved'
@@ -791,11 +898,17 @@ class Room:
                                                  'die gleiche Person zu beschützen',
                                          votes=make_voteable_player_list(self.alive))
             else:
+                expected = self.get_player_except([self.protected])
+                if len(expected) < 1:
+                    self.protected = None
+                    self.actual_step = 'protector'
+                    self.next_step()
+                    return
                 self.request_player_vote(role='Beschützer', header='Wen möchtest du beschützen?',
                                          message='Du kannst jede Nacht eine Person vor dem grausigen Tod durch die '
                                                  'Werwölfe beschützen, doch wäre es zu auffällig zweimal hintereinander '
                                                  'die gleiche Person zu beschützen',
-                                         votes=make_voteable_player_list(self.get_player_except([self.protected])))
+                                         votes=make_voteable_player_list(expected))
             self.send_sound_event_to_players(event_name='protector')
         elif self.actual_step == 'protector':
             if not self.role_is_present('Werwolf'):
@@ -825,10 +938,10 @@ class Room:
                                      message='Betörende Düfte liegen über der Stadt und du hörst schaurige Wörter in '
                                              'deinen Träumen!')
             if not self.request_player_vote(role='Hexe', header='Die Hexen erwachen',
-                                     message=self.to_kill.username + ' wurde von den Werwölfen verwundet. Möchtest du '
-                                                                     'ihn '
-                                                                     'heilen?',
-                                     votes=get_witch_votes()):
+                                            message=self.to_kill.username + ' wurde von den Werwölfen verwundet. Möchtest du '
+                                                                            'ihn '
+                                                                            'heilen?',
+                                            votes=get_witch_votes()):
                 self.next_step()
                 return
             self.send_sound_event_to_players(event_name='witch_heal')
@@ -840,9 +953,9 @@ class Room:
                                      message='Betörende Düfte liegen über der Stadt und du hörst schaurige Wörter in '
                                              'deinen Träumen!')
             if not self.request_player_vote(role='Hexe', header='Die Hexen erwachen',
-                                     message='Möchtest du jemandem noch deinen Todestrank einflößen?',
-                                     votes="""</div><div class="option Nein"><input type="radio" class="radio" id="sidebar-Nein" name="category"><label for="sidebar-Nein">Nein</label></div>""" + make_voteable_player_list(
-                                         self.alive)):
+                                            message='Möchtest du jemandem noch deinen Todestrank einflößen?',
+                                            votes="""</div><div class="option Nein"><input type="radio" class="radio" id="sidebar-Nein" name="category"><label for="sidebar-Nein">Nein</label></div>""" + make_voteable_player_list(
+                                                self.alive)):
                 self.handle_last_step()
                 self.next_step()
                 return

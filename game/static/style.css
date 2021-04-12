@@ -481,6 +481,38 @@ input {
     cursor: pointer;
 }
 
+#reload {
+    z-index: 10;
+    background: gray;
+    border-radius: 5px 0 0 5px;
+    position: fixed;
+    right: 0;
+    padding: 0.5rem 1rem 0.5rem 0.5rem;
+    box-shadow: 0 15px 20px rgba(255, 255, 255, 0.2);
+    transition: all .5s ease;
+    top: 4rem;
+    cursor: pointer;
+}
+
+#reload i {
+    transform: rotate(0deg);
+    transition: linear 0s;
+}
+
+#reload.rotate i {
+    transform: rotate(360deg);
+    transition: linear 2s;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
 /*  ==============
     FLASH MESSAGES
     ==============  */
@@ -490,6 +522,7 @@ input {
     z-index: 2;
     right: 1rem;
     bottom: 1rem;
+    left: 1rem;
 }
 
 .flash {

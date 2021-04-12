@@ -53,6 +53,14 @@ def message(data):
     emit('set_explanation', 'Beschreibung: ', broadcast=False)
 
 
+@socketio.on('reload')
+def reload(data):
+    if request.sid in sids:
+        player = sids[request.sid]
+        if player is not None and player.room is not None:
+            player.room.reload_for_player(player=player)
+
+
 @socketio.on('username')
 def user_login(username):
     if not len(str(username).strip()):
