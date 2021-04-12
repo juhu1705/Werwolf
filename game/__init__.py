@@ -24,9 +24,10 @@ def read_or_generate_secret_key(app: Flask) -> bytes:
 
 
 app = Flask(__name__, instance_relative_config=True)
-app.config.from_mapping(SECRET_KEY=read_or_generate_secret_key(app))
 
 os.makedirs(app.instance_path, exist_ok=True)
+
+app.config.from_mapping(SECRET_KEY=read_or_generate_secret_key(app))
 
 users = {}
 sids = {}
